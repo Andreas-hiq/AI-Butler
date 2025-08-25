@@ -1,8 +1,13 @@
-﻿using Microsoft.SemanticKernel;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
 using System;
 using System.Threading.Tasks;
+using Butler.Core;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Butler.ConsoleApp
 {
@@ -10,47 +15,45 @@ namespace Butler.ConsoleApp
     {
         static async Task Main(string[] args)
         {
-            var modelId = "gemma3:1b";
-            var endpoint = new Uri("http://localhost:11434/");
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddEnvironmentVariables()
+                .Build();
 
-            var builder = Kernel.CreateBuilder().AddOllamaChatCompletion(modelId, endpoint);
+            //DI setup
+            var services = new ServiceCollection()
+                .AddButlerCore(config)
+                .BuildServiceProvider();
 
-            //Kernel
-            Kernel kernel = builder.Build();
-            var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
+            var chat = services.GetRequiredService<IChatService>();
 
-            //Enable planning
-            OllamaPromptExecutionSettings ollamaPromptExecutionSettings = new()
+            Console.WriteLine("Welcome to Butler. Type 'exit' to exit chat");
+
+            while (true)
             {
-                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
-            };
+                Console.Write("You> ");
 
-            //Chat history
-            var history = new ChatHistory();
+                var userInput = Console.ReadLine();
+                if (userInput is null || userInput.Trim().Equals("exit", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+                if (string.IsNullOrWhiteSpace(userInput))
+                {
+                    continue;
+                }
 
-            //Initiate back-and-forth chat
-            string? userInput;
-            do
-            {
-                //Get user input
-                Console.WriteLine("User> ");
-                userInput = Console.ReadLine();
+                //Not streamed answer
+                // var answer = await chat.GetOnceAsync(userInput);
 
-                //Add user input to chat history
-                history.AddUserMessage(userInput ?? string.Empty);
-
-                //Get response from the AI model
-                var result = await chatCompletionService.GetChatMessageContentAsync(
-                    history,
-                    executionSettings: ollamaPromptExecutionSettings,
-                    kernel: kernel
-                    );
-
-                //Print the results
-                Console.WriteLine("Butler> " + result);
-                //Add the response to chat history
-                history.AddMessage(result.Role, result.Content ?? string.Empty);
-            } while (userInput is not null);
+                //Streamed answer
+                Console.Write("Butler> ");
+                await foreach (var token in chat.StreamAsync(userInput))
+                {
+                    Console.Write(token.Content);
+                }
+                Console.WriteLine();
+            }
         }
     }
 }
