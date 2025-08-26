@@ -54,3 +54,4 @@ TestResult.xml
 nunit-*.xml
 /Butler/.vs/Butler
 /.vs/AI-Butler/FileContentIndex
+/.vs
