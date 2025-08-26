@@ -19,7 +19,7 @@ namespace Butler.Core
             _chat = _kernel.GetRequiredService<IChatCompletionService>();
         }
 
-        public async Task<string> AskOnceAsync(string userInput, string? systemPrompt = null)
+        public async Task<string> AskOnce(string userInput, string? systemPrompt = null)
         {
             var history = new ChatHistory();
             history.AddSystemMessage(systemPrompt ?? "You are Butler, a helpful assistant.");
@@ -29,7 +29,7 @@ namespace Butler.Core
             return result.Content ?? string.Empty;
         }
 
-        public async IAsyncEnumerable<StreamingChatMessageContent> StreamAsync(string userInput, string? systemPrompt = null)
+        public async IAsyncEnumerable<StreamingChatMessageContent> Stream(string userInput, string? systemPrompt = null)
         {
             var history = new ChatHistory();
             history.AddSystemMessage(systemPrompt ?? "You are Butler, a helpful assistant.");

@@ -23,9 +23,9 @@ namespace Butler.Core
 
             services.AddTransient(sp =>
             {
-                var builder = Kernel.CreateBuilder();
-                builder.AddOllamaChatCompletion(modelId, baseUrl);
-                return builder.Build();
+                return new Kernel.CreateBuilder()
+                .AddOllamaChatCompletion(modelId, baseUrl)
+                .Build();
             });
 
             services.AddTransient<IChatService, ChatService>();

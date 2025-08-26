@@ -9,7 +9,7 @@ namespace Butler.Core
 {
     public interface IChatService
     {
-        Task<string> AskOnceAsync(string userInput, string? systemPrompt = null);
-        IAsyncEnumerable<StreamingChatMessageContent> StreamAsync(string userInput, string? systemPrompt = null);
+        Task<string> AskOnce(string userInput, string? systemPrompt = null);
+        IAsyncEnumerable<StreamingChatMessageContent> StreamAnswer(string userInput, string? systemPrompt = null);
     }
 }
