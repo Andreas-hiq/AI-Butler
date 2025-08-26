@@ -21,21 +21,21 @@ namespace Butler.Core
 
         public async Task<string> AskOnce(string userInput, string? systemPrompt = null)
         {
-            var history = new ChatHistory();
+            ChatHistory history = [];
             history.AddSystemMessage(systemPrompt ?? "You are Butler, a helpful assistant.");
             history.AddUserMessage(userInput);
 
-            var result = await _chat.GetChatMessageContentAsync(history, kernel: _kernel);
+            ChatMessageContent result = await _chat.GetChatMessageContentAsync(history, kernel: _kernel);
             return result.Content ?? string.Empty;
         }
 
-        public async IAsyncEnumerable<StreamingChatMessageContent> Stream(string userInput, string? systemPrompt = null)
+        public async IAsyncEnumerable<StreamingChatMessageContent> StreamAnswer(string userInput, string? systemPrompt = null)
         {
-            var history = new ChatHistory();
+            ChatHistory history = [];
             history.AddSystemMessage(systemPrompt ?? "You are Butler, a helpful assistant.");
             history.AddUserMessage(userInput);
 
-            await foreach (var token in _chat.GetStreamingChatMessageContentsAsync(history, kernel: _kernel))
+            await foreach (StreamingChatMessageContent token in _chat.GetStreamingChatMessageContentsAsync(history, kernel: _kernel))
             {
                 yield return token;
             }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OllamaSharp;
 using static OllamaSharp.OllamaApiClient;
 
 namespace Butler.Core
@@ -18,9 +19,10 @@ namespace Butler.Core
         /// </summary>
         public static IServiceCollection AddButlerCore(this IServiceCollection services, IConfiguration config)
         {
-            var baseUrl = new Uri(config["Ollama:BaseUrl"] ?? "http://localhost:11434");
-            var modelId = config["Ollama:ModelId"] ?? "gemma3:1b";
+            Uri baseUrl = new Uri(config["Ollama:BaseUrl"] ?? "http://localhost:11434");
+            string modelId = config["Ollama:ModelId"] ?? "gemma3:1b";
 
+            //TODO: fix this
             services.AddTransient(sp =>
             {
                 return new Kernel.CreateBuilder()
