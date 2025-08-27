@@ -8,6 +8,7 @@ using System;
 using System.Threading.Tasks;
 using Butler.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Windows.Media.SpeechSynthesis;
 
 namespace Butler.ConsoleApp
 {
@@ -44,11 +45,11 @@ namespace Butler.ConsoleApp
                 }
 
                 //Not streamed answer
-                // var answer = await chat.GetOnceAsync(userInput);
+                //string answer = await chat.AskOnce(userInput);
 
                 //Streamed answer
                 Console.Write("Butler> ");
-                await foreach (StreamingChatMessageContent token in chat.StreamAnswer(userInput))
+                await foreach (StreamingChatMessageContent token in chat.GetStreamingResponse(userInput))
                 {
                     Console.Write(token.Content);
                 }

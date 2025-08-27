@@ -29,7 +29,7 @@ namespace Butler.Core
             return result.Content ?? string.Empty;
         }
 
-        public async IAsyncEnumerable<StreamingChatMessageContent> StreamAnswer(string userInput, string? systemPrompt = null)
+        public async IAsyncEnumerable<StreamingChatMessageContent> GetStreamingResponse(string userInput, string? systemPrompt = null)
         {
             ChatHistory history = [];
             history.AddSystemMessage(systemPrompt ?? "You are Butler, a helpful assistant.");
