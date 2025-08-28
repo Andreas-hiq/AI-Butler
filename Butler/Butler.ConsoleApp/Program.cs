@@ -1,14 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.Configuration.EnvironmentVariables;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.Ollama;
-using System;
-using System.Threading.Tasks;
-using Butler.Core;
+﻿using Butler.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Windows.Media.SpeechSynthesis;
+using Microsoft.SemanticKernel;
 
 namespace Butler.ConsoleApp
 {
