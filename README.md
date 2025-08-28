@@ -1,9 +1,14 @@
 # AI-Butler
 
-# MMVP:
-- Koppla ihop Ollama Gemma3 med våran backend
-- Få input från Console som matas till Gemma3
-- Gemma3 svarar tillbaka i Console
+# How To Run:
+1. Ensure you have installed .NET 9 or above [download](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+2. Download Ollama [here](https://ollama.com/download)
+2. Open Command line 
+   1. Win + R
+   2. Type "cmd"
+3. Type `ollama pull gemma3:1b` to install the model `gemma3:1b`
+4. Type `ollama serve` to start a local ollama server
+5. Go to the "AI-Butler" directory in your console and run `dotnet run --project Butler/Butler.ConsoleApp`
 
 # MVP:
 - Välja frontend ramverk
