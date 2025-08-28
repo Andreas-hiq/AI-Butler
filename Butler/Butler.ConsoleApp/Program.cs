@@ -1,31 +1,25 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.Configuration.EnvironmentVariables;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.Ollama;
-using System;
-using System.Threading.Tasks;
-using Butler.Core;
+﻿using Butler.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel;
 
 namespace Butler.ConsoleApp
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            var config = new ConfigurationBuilder()
+            IConfigurationRoot config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddEnvironmentVariables()
                 .Build();
 
             //DI setup
-            var services = new ServiceCollection()
+            ServiceProvider services = new ServiceCollection()
                 .AddButlerCore(config)
                 .BuildServiceProvider();
 
-            var chat = services.GetRequiredService<IChatService>();
+            IChatService chat = services.GetRequiredService<IChatService>();
 
             Console.WriteLine("Welcome to Butler. Type 'exit' to exit chat");
 
@@ -33,7 +27,7 @@ namespace Butler.ConsoleApp
             {
                 Console.Write("You> ");
 
-                var userInput = Console.ReadLine();
+                string? userInput = Console.ReadLine();
                 if (userInput is null || userInput.Trim().Equals("exit", StringComparison.OrdinalIgnoreCase))
                 {
                     break;
@@ -44,11 +38,11 @@ namespace Butler.ConsoleApp
                 }
 
                 //Not streamed answer
-                // var answer = await chat.GetOnceAsync(userInput);
+                //string answer = await chat.AskOnce(userInput);
 
                 //Streamed answer
                 Console.Write("Butler> ");
-                await foreach (var token in chat.StreamAsync(userInput))
+                await foreach (StreamingChatMessageContent token in chat.GetStreamingResponse(userInput))
                 {
                     Console.Write(token.Content);
                 }

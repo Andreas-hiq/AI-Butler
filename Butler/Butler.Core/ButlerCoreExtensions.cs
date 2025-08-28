@@ -1,12 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static OllamaSharp.OllamaApiClient;
 
 namespace Butler.Core
 {
@@ -18,12 +12,12 @@ namespace Butler.Core
         /// </summary>
         public static IServiceCollection AddButlerCore(this IServiceCollection services, IConfiguration config)
         {
-            var baseUrl = new Uri(config["Ollama:BaseUrl"] ?? "http://localhost:11434");
-            var modelId = config["Ollama:ModelId"] ?? "gemma3:1b";
+            Uri baseUrl = new Uri(config["Ollama:BaseUrl"] ?? "http://localhost:11434");
+            string modelId = config["Ollama:ModelId"] ?? "gemma3:1b";
 
-            services.AddTransient(sp =>
+            services.AddTransient(_ =>
             {
-                return new Kernel.CreateBuilder()
+                return Kernel.CreateBuilder()
                 .AddOllamaChatCompletion(modelId, baseUrl)
                 .Build();
             });
