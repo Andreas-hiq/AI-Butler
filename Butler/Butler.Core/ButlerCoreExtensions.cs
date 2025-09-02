@@ -14,11 +14,13 @@ namespace Butler.Core
         {
             Uri baseUrl = new Uri(config["Ollama:BaseUrl"] ?? "http://localhost:11434");
             string modelId = config["Ollama:ModelId"] ?? "gemma3:1b";
+            string embeddingModel = config["Ollama:EmbeddingModel"] ?? "nomic-embed-text";
 
             services.AddTransient(_ =>
             {
                 return Kernel.CreateBuilder()
                 .AddOllamaChatCompletion(modelId, baseUrl)
+                .AddOllamaEmbeddingGenerator(embeddingModel, baseUrl)
                 .Build();
             });
 
