@@ -10,6 +10,26 @@
 4. Type `ollama serve` to start a local ollama server
 5. Go to the "AI-Butler" directory in your console and run `dotnet run --project Butler/Butler.ConsoleApp`
 
+# Get database up and running:
+1. Download Docker [here](https://www.docker.com/)
+2. Open Command line 
+   1. Win + R
+   2. Type "cmd"
+3. Go to the AI-Butler directory in the console
+4. Run `docker compose up -d`. It will start the database and download the necessary packages
+5. Check that the db is up and running with `docker ps`, should return 'butler-pg'
+6. Test query to double check: run `docker exec -it butler-pg psql -U butler -d butler -c "SELECT 1;"`
+7. Create pgvector-extension + table (only do this the first time). Run 
+   `docker exec -it butler-pg psql -U butler -d butler -c "CREATE EXTENSION IF NOT EXISTS vector;"
+   docker exec -it butler-pg psql -U butler -d butler -c "
+   CREATE TABLE IF NOT EXISTS rag_chunks (
+     id uuid PRIMARY KEY,
+     source text NOT NULL,
+     content text NOT NULL,
+     embedding vector(768) NOT NULL
+   );"`
+   8. To stop the DB, run `docker compose down`. And start again with `docker compose up -d`
+
 # MVP:
 - Välja frontend ramverk
 - Enkel textbox och element för att visa svar från Gemma3
