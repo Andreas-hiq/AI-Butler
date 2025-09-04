@@ -1,4 +1,6 @@
-﻿using Microsoft.SemanticKernel;
+﻿using Butler.Core.RAG;
+using Butler.Core.RAG.Models;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Butler.Core
@@ -7,11 +9,18 @@ namespace Butler.Core
     {
         private readonly Kernel _kernel;
         private readonly IChatCompletionService _chat;
+        private readonly RagPipeline _ragPipeline;
 
         public ChatService(Kernel kernel)
         {
             _kernel = kernel;
             _chat = _kernel.GetRequiredService<IChatCompletionService>();
+            _ragPipeline = null!;
+        }
+
+        public ChatService(RagPipeline ragPipeline) {
+            _ragPipeline = ragPipeline;
+            _kernel = null!;
         }
 
         public async Task<string> AskOnce(string userInput, string? systemPrompt = null)
@@ -22,6 +31,11 @@ namespace Butler.Core
 
             ChatMessageContent result = await _chat.GetChatMessageContentAsync(history, kernel: _kernel);
             return result.Content ?? string.Empty;
+        }
+
+        public async Task<string> AskOnce(string query) {
+            RagResponse ragResponse = await _ragPipeline.Run(query);
+            return ragResponse.Answer;
         }
 
         public async IAsyncEnumerable<StreamingChatMessageContent> GetStreamingResponse(string userInput, string? systemPrompt = null)

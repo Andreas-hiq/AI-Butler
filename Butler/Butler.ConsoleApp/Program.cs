@@ -9,19 +9,14 @@ namespace Butler.ConsoleApp
     {
         private static async Task Main(string[] args)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            //DI setup
-            ServiceProvider services = new ServiceCollection()
-                .AddButlerCore(config)
-                .BuildServiceProvider();
-
-            IChatService chat = services.GetRequiredService<IChatService>();
-
             Console.WriteLine("Welcome to Butler. Type 'exit' to exit chat");
+            Console.WriteLine("Please select setup:\nFor Custom built enter '1'\nFor Microsoft setup enter '2'");
+            string? setupchoice = Console.ReadLine();
+
+            IChatService chat = setupchoice == "1" ? CustomSetup() : MsSetup();
+            
+            
+
 
             while (true)
             {
@@ -47,6 +42,28 @@ namespace Butler.ConsoleApp
                     Console.Write(token.Content);
                 }
                 Console.WriteLine();
+            }
+            return;
+
+            IChatService CustomSetup() {
+                ServiceProvider services = new ServiceCollection()
+                    .AddButlerCore()
+                    .BuildServiceProvider();
+                return services.GetRequiredService<IChatService>();
+            }
+
+            IChatService MsSetup() {
+                IConfigurationRoot config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", optional: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+
+                //DI setup
+                ServiceProvider services = new ServiceCollection()
+                    .AddButlerCore(config)
+                    .BuildServiceProvider();
+
+                return services.GetRequiredService<IChatService>();
             }
         }
     }
