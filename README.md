@@ -19,15 +19,15 @@
 4. Run `docker compose up -d`. It will start the database and download the necessary packages
 5. Check that the db is up and running with `docker ps`, should return 'butler-pg'
 6. Test query to double check: run `docker exec -it butler-pg psql -U butler -d butler -c "SELECT 1;"`
-7. Create pgvector-extension + table (only do this the first time). Run 
-   `docker exec -it butler-pg psql -U butler -d butler -c "CREATE EXTENSION IF NOT EXISTS vector;"
-   docker exec -it butler-pg psql -U butler -d butler -c "
-   CREATE TABLE IF NOT EXISTS rag_chunks (
-     id uuid PRIMARY KEY,
-     source text NOT NULL,
-     content text NOT NULL,
-     embedding vector(768) NOT NULL
-   );"`
+7. Create pgvector-extension + table (only do this the first time).
+     1. Run `docker exec -it butler-pg psql -U butler -d butler -c "CREATE EXTENSION IF NOT EXISTS vector;"`
+     2. Run `docker exec -it butler-pg psql -U butler -d butler -c "
+               CREATE TABLE IF NOT EXISTS rag_chunks (
+                 id uuid PRIMARY KEY,
+                 source text NOT NULL,
+                 content text NOT NULL,
+                 embedding vector(768) NOT NULL
+   );"`   
    8. To stop the DB, run `docker compose down`. And start again with `docker compose up -d`
 
 # MVP:
