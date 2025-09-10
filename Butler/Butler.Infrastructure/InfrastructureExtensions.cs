@@ -18,7 +18,7 @@ namespace Butler.Infrastructure
             builder.UseVector();
             NpgsqlDataSource dataSource = builder.Build();
 
-            services.AddSingleton(dataSource);
+            services.AddSingleton(dataSource); //Singleton because it's thread-safe and intended to be reused
 
 
             //TODO: Add other infrastructure services here

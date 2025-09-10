@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butler.Core", "Butler.Core\Butler.Core.csproj", "{7DB827B2-CEE7-490C-B8FF-DAC9AE3BB929}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butler.Infrastructure", "Butler.Infrastructure\Butler.Infrastructure.csproj", "{138599FF-13DB-4D86-BD19-41E4306FE217}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7DB827B2-CEE7-490C-B8FF-DAC9AE3BB929} = {7DB827B2-CEE7-490C-B8FF-DAC9AE3BB929}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
