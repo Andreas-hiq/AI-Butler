@@ -10,13 +10,10 @@ namespace Butler.ConsoleApp
         private static async Task Main(string[] args)
         {
             Console.WriteLine("Welcome to Butler. Type 'exit' to exit chat");
-            Console.WriteLine("Please select setup:\nFor Custom built enter '1'\nFor Microsoft setup enter '2'");
+            Console.WriteLine("Please select setup:\nFor Custom build enter '1'\nFor Microsoft setup enter '2'");
             string? setupchoice = Console.ReadLine();
 
             IChatService chat = setupchoice == "1" ? CustomSetup() : MsSetup();
-            
-            
-
 
             while (true)
             {
