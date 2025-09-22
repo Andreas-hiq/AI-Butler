@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Butler.Core.RAG.Interfaces;
+using Butler.Infrastructure.Data;
+using Butler.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using System;
@@ -20,9 +23,10 @@ namespace Butler.Infrastructure
 
             services.AddSingleton(dataSource); //Singleton because it's thread-safe and intended to be reused
 
-
-            //TODO: Add other infrastructure services here
-            // e.g services.AddTransient<IRagRepository, RagRepository>(); etc
+            
+            services.AddTransient<IRAGRepository, RAGRepository>();
+            services.AddTransient<IIngestService, IngestService>();
+            services.AddTransient<IRAGSearchService, RAGSearchService>();
 
             return services;
         }
