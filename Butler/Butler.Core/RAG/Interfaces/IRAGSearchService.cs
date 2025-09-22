@@ -9,6 +9,6 @@ namespace Butler.Core.RAG.Interfaces
 {
     public interface IRAGSearchService
     {
-        Task<IReadOnlyList<RetrievalResult>> SearchAsync(float[] queryEmbedding, int topK, CancellationToken ct = default);
+        Task<IReadOnlyList<RetrievalResult>> SearchAsync(string query, int topK, CancellationToken ct = default);
     }
 }

@@ -58,9 +58,21 @@ namespace Butler.Infrastructure.Services
             Console.WriteLine($"Ingested {index} chunks from {filePath}");
         }
 
-        public Task IngestFolderAsync(string folderPath, CancellationToken ct = default)
+        public async Task IngestFolderAsync(string folderPath, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            if(string.IsNullOrWhiteSpace(folderPath))
+                throw new ArgumentException("folder path is required", nameof (folderPath));
+            if (!Directory.Exists(folderPath))
+                throw new FileNotFoundException($"Folder not found: {folderPath}");
+
+            var files = Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories)
+                .Where(file => file.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) ||
+                               file.EndsWith(".md", StringComparison.OrdinalIgnoreCase));
+
+            foreach (string file in files)
+            {
+                await IngestDocumentAsync (file, ct);
+            }
         }
 
         /// <summary>
