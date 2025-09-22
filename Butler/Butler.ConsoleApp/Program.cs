@@ -1,4 +1,5 @@
 ﻿using Butler.Core;
+using Butler.Core.RAG.Interfaces;
 using Butler.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,7 @@ namespace Butler.ConsoleApp
                 .AddButlerInfrastructure(config)
                 .BuildServiceProvider();
 
-
+            #region Datasource test
             //Datasource test
             NpgsqlDataSource ds = services.GetRequiredService<NpgsqlDataSource>();
 
@@ -35,8 +36,13 @@ namespace Butler.ConsoleApp
                     Console.WriteLine($"Datasource test returned: {reader.GetInt32(0)}"); //should write 1
                 }
             }
+            #endregion
 
+            var ingestService = services.GetRequiredService<IIngestService>();
+            var RAGService = services.GetRequiredService<IRAGSearchService>();
+            var chatService = services.GetRequiredService<IChatService>();
 
+            Console.WriteLine("Type 'ingest <folder>' or a question. 'exit' quits Butler");
 
             IChatService chat = services.GetRequiredService<IChatService>();
 
