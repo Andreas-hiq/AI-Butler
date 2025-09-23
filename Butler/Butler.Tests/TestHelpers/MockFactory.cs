@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Butler.Tests;
+namespace Butler.Tests.TestHelpers;
 
 using Moq;
 
@@ -9,8 +9,17 @@ public static class MockFactory {
         Expression<Func<T, TResult>> expression,
         TResult result
     ) where T : class {
-        Mock<T> mock = new Mock<T>();
+        Mock<T> mock = new();
         mock.Setup(expression).Returns(result);
+        return mock;
+    }
+
+    public static Mock<T> CreateReturningAsync<T, TResult>(
+        Expression<Func<T, Task<TResult>>> expression,
+        TResult result) where T : class
+    {
+        Mock<T> mock = new();
+        mock.Setup(expression).ReturnsAsync(result);
         return mock;
     }
 
@@ -18,7 +27,7 @@ public static class MockFactory {
         Expression<Func<T, TResult>> expression, 
         Exception exception
     ) where T : class {
-        Mock<T> mock = new Mock<T>();
+        Mock<T> mock = new();
         mock.Setup(expression).Throws(exception);
         return mock;
     }

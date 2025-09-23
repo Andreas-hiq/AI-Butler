@@ -3,7 +3,7 @@
 namespace Butler.Core.RAG.Services;
 
 public class VectorStore {
-    private readonly List<DocumentChunk> _store = new();
+    private readonly List<DocumentChunk> _store = [];
     
     public void Add(DocumentChunk chunk) { 
         _store.Add(chunk);
@@ -11,7 +11,8 @@ public class VectorStore {
     /*
      * TODO: Improve naming: what's being searched for. A specific vector? A query?
      */
-    public IReadOnlyList<RetrievalResult> Search(float[] queryEmbedding, int topK = 3) {
+    public IReadOnlyList<RetrievalResult> Search(float[] queryEmbedding) {
+        const int topK = 3;
         return _store
             .Select(documentChunk => new RetrievalResult(documentChunk, CosineSimilarity(queryEmbedding, documentChunk.Embedding)))
             .OrderByDescending(result => result.Score)

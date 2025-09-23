@@ -3,10 +3,10 @@
 namespace Butler.Core.RAG.Services;
 
 public class Retrieval {
-    private readonly Embedding _embedding;
-    private readonly VectorStore _vectorStore;
+    private readonly IEmbedding _embedding;
+    private readonly IVectorStore _vectorStore;
 
-    public Retrieval(Embedding embedding, VectorStore vectorStore) {
+    public Retrieval(IEmbedding embedding, IVectorStore vectorStore) {
         _embedding = embedding;
         _vectorStore = vectorStore;
     }
