@@ -55,7 +55,7 @@ namespace Butler.Infrastructure.Data
         public async Task<IReadOnlyList<RetrievalResult>> SearchAsync(float[] queryEmbedding, int topK, CancellationToken ct = default)
         {
             const string sql = @"
-                SELECT source, content, (1 - (embedding <=>) @query AS score)
+                SELECT source, content, (1 - (embedding <=> @query)) AS score
                 FROM rag_chunks
                 ORDER BY embedding <=> @query
                 LIMIT @topK

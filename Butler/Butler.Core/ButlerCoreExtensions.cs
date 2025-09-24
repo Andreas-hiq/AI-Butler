@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using Microsoft.Extensions.AI;
 
 namespace Butler.Core
 {
@@ -24,6 +25,12 @@ namespace Butler.Core
                 .AddOllamaChatCompletion(modelId, baseUrl)
                 .AddOllamaEmbeddingGenerator(embeddingModel, baseUrl)
                 .Build();
+            });
+
+            services.AddTransient<IEmbeddingGenerator<string, Embedding<float>>>(sp =>
+            {
+                var kernel = sp.GetRequiredService<Kernel>();
+                return kernel.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
             });
 
             services.AddTransient<IChatService, ChatService>();

@@ -20,6 +20,7 @@ namespace Butler.ConsoleApp
 
             //DI setup
             ServiceProvider services = new ServiceCollection()
+                .AddSingleton<IConfiguration>(config)
                 .AddButlerCore(config)
                 .AddButlerInfrastructure(config)
                 .BuildServiceProvider();
@@ -38,41 +39,73 @@ namespace Butler.ConsoleApp
             }
             #endregion
 
-            var ingestService = services.GetRequiredService<IIngestService>();
-            var RAGService = services.GetRequiredService<IRAGSearchService>();
-            var chatService = services.GetRequiredService<IChatService>();
+            IIngestService ingestService = services.GetRequiredService<IIngestService>();
+            IRAGSearchService RAGService = services.GetRequiredService<IRAGSearchService>();
+            IChatService chatService = services.GetRequiredService<IChatService>();
 
             Console.WriteLine("Type 'ingest <folder>' or a question. 'exit' quits Butler");
 
-            IChatService chat = services.GetRequiredService<IChatService>();
-
-            Console.WriteLine("Welcome to Butler. Type 'exit' to exit chat");
-
-            while (true)
+            string? userInput;
+            while ((userInput = Console.ReadLine()) is not null)
             {
-                Console.Write("You> ");
-
-                string? userInput = Console.ReadLine();
-                if (userInput is null || userInput.Trim().Equals("exit", StringComparison.OrdinalIgnoreCase))
-                {
+                if (userInput.Trim().Equals("exit", StringComparison.OrdinalIgnoreCase))
                     break;
-                }
-                if (string.IsNullOrWhiteSpace(userInput))
+
+                if (userInput.StartsWith("ingest ", StringComparison.OrdinalIgnoreCase))
                 {
+                    string path = userInput.Substring(7).Trim();
+                    await ingestService.IngestFolderAsync(path);
+                    Console.WriteLine("Ingest done");
                     continue;
                 }
 
-                //Not streamed answer
-                //string answer = await chat.AskOnce(userInput);
+                IReadOnlyList<Core.RAG.Models.RetrievalResult> hits = await RAGService.SearchAsync(userInput, topK: 5);
+                string context = string.Join("\n---\n", hits.Select(h => h.DocumentChunk.Content));
+                string prompt = $@"SYSTEM:
+                                    You are Butler. Answer only from GIVEN CONTEXT.
+                                    If the answer is missing: say 'I can't find it in my dossier.'
+                                    
+                                    CONTEXT:
+                                    {context}
+                                    QUERY:
+                                    {userInput}";
+                string answer = await chatService.AskOnce(prompt);
+                Console.WriteLine($"\nButler> {answer}");
+                Console.WriteLine("Sources:");
+                foreach (Core.RAG.Models.RetrievalResult hit in hits)
+                    Console.WriteLine(" - " + hit.DocumentChunk.Source);
 
-                //Streamed answer
-                Console.Write("Butler> ");
-                await foreach (StreamingChatMessageContent token in chat.GetStreamingResponse(userInput))
-                {
-                    Console.Write(token.Content);
-                }
-                Console.WriteLine();
             }
+
+            //IChatService chat = services.GetRequiredService<IChatService>();
+
+            //Console.WriteLine("Welcome to Butler. Type 'exit' to exit chat");
+
+            //while (true)
+            //{
+            //    Console.Write("You> ");
+
+            //    string? userInput = Console.ReadLine();
+            //    if (userInput is null || userInput.Trim().Equals("exit", StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        break;
+            //    }
+            //    if (string.IsNullOrWhiteSpace(userInput))
+            //    {
+            //        continue;
+            //    }
+
+            //    //Not streamed answer
+            //    //string answer = await chat.AskOnce(userInput);
+
+            //    //Streamed answer
+            //    Console.Write("Butler> ");
+            //    await foreach (StreamingChatMessageContent token in chat.GetStreamingResponse(userInput))
+            //    {
+            //        Console.Write(token.Content);
+            //    }
+            //    Console.WriteLine();
+            //}
         }
     }
 }

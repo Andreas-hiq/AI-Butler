@@ -2,7 +2,6 @@
 using Butler.Core.RAG.Models;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
-using Microsoft.SemanticKernel.Embeddings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +49,7 @@ namespace Butler.Infrastructure.Services
                 Embedding<float> embedding = await _embed.GenerateAsync(value: chunk, options: null, cancellationToken: ct);
                 float[] vector = embedding.Vector.ToArray();
 
-                DocumentChunk documentChunk = new($"{filePath}#chunk-{{index:D3}}", chunk);
+                DocumentChunk documentChunk = new($"{filePath}#chunk-{index:D3}", chunk);
                 await _repo.InsertChunkAsync(documentChunk, vector, ct);
                 index++;
             }
