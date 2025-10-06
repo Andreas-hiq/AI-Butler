@@ -1,6 +1,11 @@
-﻿namespace Butler.Core.RAG.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public class RetrievalResult(DocumentChunk documentChunk, double score) {
-    public DocumentChunk DocumentChunk { get; } = documentChunk;
-    public double Score { get; } = score;
+namespace Butler.Core.RAG.Models
+{
+    //Result of a vector search: a document chunk and its similarity score(0..1)(the higher the better)
+    public record RetrievalResult(DocumentChunk DocumentChunk, float Score);
 }

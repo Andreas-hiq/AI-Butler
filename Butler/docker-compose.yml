@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: butler-pg
+    environment:
+      POSTGRES_USER: butler
+      POSTGRES_PASSWORD: butler
+      POSTGRES_DB: butler
+    ports:
+      - "5432:5432"
+    volumes:
+      - butler-pg-data:/var/lib/postgresql/data
+
+volumes:
+  butler-pg-data:
