@@ -40,8 +40,9 @@ namespace Butler.ConsoleApp
             #endregion
 
             IIngestService ingestService = services.GetRequiredService<IIngestService>();
-            IRAGSearchService RAGService = services.GetRequiredService<IRAGSearchService>();
-            IChatService chatService = services.GetRequiredService<IChatService>();
+            //IRAGSearchService RAGService = services.GetRequiredService<IRAGSearchService>();
+            //IChatService chatService = services.GetRequiredService<IChatService>();
+            Orchestrator orchestrator = services.GetRequiredService<Orchestrator>();
 
             Console.WriteLine("Type 'ingest <folder>' or a question. 'exit' quits Butler");
 
@@ -59,21 +60,26 @@ namespace Butler.ConsoleApp
                     continue;
                 }
 
-                IReadOnlyList<Core.RAG.Models.RetrievalResult> hits = await RAGService.SearchAsync(userInput, topK: 5);
-                string context = string.Join("\n---\n", hits.Select(h => h.DocumentChunk.Content));
-                string prompt = $@"SYSTEM:
-                                    You are Butler. Answer only from GIVEN CONTEXT.
-                                    If the answer is missing: say 'I can't find it in my dossier.'
+                //IReadOnlyList<Core.RAG.Models.RetrievalResult> hits = await RAGService.SearchAsync(userInput, topK: 5);
+                //string context = string.Join("\n---\n", hits.Select(h => h.DocumentChunk.Content));
+                //string prompt = $@"SYSTEM:
+                //                    You are Butler. Answer only from GIVEN CONTEXT.
+                //                    If the answer is missing: say 'I can't find it in my dossier.'
                                     
-                                    CONTEXT:
-                                    {context}
-                                    QUERY:
-                                    {userInput}";
-                string answer = await chatService.AskOnce(prompt);
-                Console.WriteLine($"\nButler> {answer}");
-                Console.WriteLine("Sources:");
-                foreach (Core.RAG.Models.RetrievalResult hit in hits)
-                    Console.WriteLine(" - " + hit.DocumentChunk.Source);
+                //                    CONTEXT:
+                //                    {context}
+                //                    QUERY:
+                //                    {userInput}";
+                //string answer = await chatService.AskOnce(prompt);
+                //Console.WriteLine($"\nButler> {answer}");
+                //Console.WriteLine("Sources:");
+                //foreach (Core.RAG.Models.RetrievalResult hit in hits)
+                //    Console.WriteLine(" - " + hit.DocumentChunk.Source);
+
+                var (answer, sources) = await orchestrator.AskWithRagAsync(userInput);
+                Console.WriteLine($"\nButler> {answer}\nSources:");
+                foreach (var (Source, Score) in sources)
+                    Console.WriteLine($" - {Source}     ({Score:0.00})");
 
             }
 

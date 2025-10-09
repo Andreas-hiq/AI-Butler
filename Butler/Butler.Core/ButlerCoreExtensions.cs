@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.Extensions.AI;
+using Butler.Core.RAG.Interfaces;
 
 namespace Butler.Core
 {
@@ -34,6 +35,8 @@ namespace Butler.Core
             });
 
             services.AddTransient<IChatService, ChatService>();
+            //services.AddTransient<IRAGSearchService, RAGSearchService>();
+            services.AddTransient<Orchestrator>();
 
             return services;
         }
