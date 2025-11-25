@@ -16,7 +16,7 @@ namespace Butler.Core
         private readonly ILogger<Orchestrator>? _logger;
 
         private const int DefaultTopK = 5;
-        private const double RelevanceThreshold = 0.55; // Filter out results below this relevance score
+        private const double RelevanceThreshold = 0.30; // Filter out results below this relevance score
         private const int MaxContextChars = 2500; // Protects against prompt bloat
 
         public Orchestrator(IRAGSearchService searchService, IChatService chatService, ILogger<Orchestrator>? logger = null)
@@ -73,13 +73,32 @@ namespace Butler.Core
         private static string BuildContext(IEnumerable<RetrievalResult> filteredHits)
         {
             var sb = new StringBuilder();
+            const string separator = "\n---\n";
+
             foreach (var hit in filteredHits)
             {
-                if (sb.Length > 0) sb.AppendLine("\n---\n");
-                sb.Append(hit.DocumentChunk.Content);
-                if (sb.Length >= MaxContextChars) break;
+                var content = hit.DocumentChunk.Content;
+                int newLength = sb.Length + (sb.Length > 0 ? separator.Length : 0) + content.Length;
+
+                if (newLength > MaxContextChars)
+                {
+                    // If we haven't added anything yet, add as much as fits to ensure at least some context
+                    if (sb.Length == 0)
+                    {
+                        sb.Append(content.Substring(0, Math.Min(content.Length, MaxContextChars)));
+                    }
+                    // If we already have context, stop here to avoid a partial chunk
+                    break;
+                }
+
+                if (sb.Length > 0)
+                {
+                    sb.Append(separator);
+                }
+                sb.Append(content);
             }
-            return sb.ToString(0, Math.Min(sb.Length, MaxContextChars));
+
+            return sb.ToString();
         }
     }
 }
